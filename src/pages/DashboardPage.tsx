@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { useBootstrap } from '@/hooks/useBootstrap';
 import { Users, Building2, CalendarDays, Palmtree, Clock, AlertTriangle } from 'lucide-react';
 
-import { formatDate, generatePlantoes } from '@/lib/scheduling';
+import { formatDate, generatePlantoes, isPlantaoActiveNow } from '@/lib/scheduling';
 
 export default function DashboardPage() {
   const { data, isLoading, isError } = useBootstrap();
@@ -14,19 +14,10 @@ export default function DashboardPage() {
   const plantoes = generatePlantoes(data);
   const now = new Date();
   const todayStr = formatDate(now);
-  const currentMinutes = now.getHours() * 60 + now.getMinutes();
-
   const feriasAtivasHoje = data.ferias.filter(f => f.status === 'aprovado' && f.data_inicio <= todayStr && f.data_fim >= todayStr);
   const colabEmFerias = new Set(feriasAtivasHoje.map(f => f.colaborador_id));
 
-  const emPlantao = plantoes.filter(p => {
-    if (p.data !== todayStr || colabEmFerias.has(p.colaborador_id)) return false;
-    const [hi, mi] = p.hora_inicio.split(':').map(Number);
-    const [hf, mf] = p.hora_fim.split(':').map(Number);
-    const inicio = hi * 60 + mi;
-    const fim = hf * 60 + mf;
-    return fim < inicio ? currentMinutes >= inicio || currentMinutes < fim : currentMinutes >= inicio && currentMinutes < fim;
-  });
+  const emPlantao = plantoes.filter(p => p.data === todayStr && !colabEmFerias.has(p.colaborador_id) && isPlantaoActiveNow(p, now));
 
   const proximos = plantoes
     .filter(p => p.data > todayStr || (p.data === todayStr && p.hora_inicio > `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`))
@@ -63,7 +54,7 @@ export default function DashboardPage() {
                 const cliente = data.clientes.find(c => c.id === equipe?.cliente_id);
                 return (
                   <div key={plantao.id} className="border rounded-lg p-4 bg-card hover:shadow-md transition-shadow">
-                    <div className="flex items-start justify-between mb-2"><p className="font-medium text-sm">{colaborador?.nome}</p><Badge variant={tipoBadge(plantao.tipo)}>{plantao.tipo}</Badge></div>
+                    <div className="flex items-start justify-between mb-2 gap-2"><p className="font-medium text-sm">{colaborador?.nome}</p><div className="flex gap-1"><Badge variant={tipoBadge(plantao.tipo)}>{plantao.tipo}</Badge>{plantao.origem === 'manual' && <Badge variant="destructive">override</Badge>}</div></div>
                     <p className="text-xs text-muted-foreground">{plantao.hora_inicio} – {plantao.hora_fim}</p>
                     {cliente && <p className="text-xs text-muted-foreground mt-1"><Building2 className="inline h-3 w-3 mr-1" />{cliente.nome}</p>}
                     <p className="text-xs text-muted-foreground">Equipe: {equipe?.nome || 'Sem equipe'}</p>

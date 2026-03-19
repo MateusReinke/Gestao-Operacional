@@ -24,6 +24,13 @@ export interface Equipe {
   ativo: boolean;
 }
 
+export interface Cargo {
+  id: string;
+  nome: string;
+  equipe_id: string;
+  ativo: boolean;
+}
+
 export type ModeloTrabalho = 'presencial' | 'hibrido' | 'remoto';
 export type TipoContrato = 'clt' | 'pj' | 'estagio' | 'temporario';
 
@@ -33,6 +40,8 @@ export interface Colaborador {
   email: string;
   telefone: string;
   equipe_id: string | null;
+  cargo_id?: string | null;
+  data_admissao?: string | null;
   tipo_contrato: TipoContrato;
   modelo_trabalho: ModeloTrabalho;
   ativo: boolean;
@@ -46,6 +55,15 @@ export interface Gestor {
 }
 
 export type TipoEscala = '12x36' | '5x2' | 'personalizada';
+export type TipoRotacao = 'semanal' | 'quinzenal' | 'fim_semana';
+export type OrigemEscala = 'manual' | 'automatico';
+export type TipoPlantao = 'plantao' | 'trabalho';
+
+export interface Turno {
+  id: string;
+  nome: string;
+  descricao: string;
+}
 
 export interface Escala {
   id: string;
@@ -68,6 +86,37 @@ export interface EscalaDetalhe {
   dia_semana: number;
   hora_inicio: string;
   hora_fim: string;
+  turno_id?: string | null;
+  quantidade_pessoas?: number;
+}
+
+export interface EscalaRotacao {
+  id: string;
+  escala_id: string;
+  turno_id?: string | null;
+  tipo_rotacao: TipoRotacao;
+  data_referencia: string;
+  ativo: boolean;
+}
+
+export interface EscalaRotacaoMembro {
+  id: string;
+  rotacao_id: string;
+  colaborador_id: string;
+  ordem: number;
+}
+
+export interface EscalaOverride {
+  id: string;
+  data: string;
+  colaborador_id: string;
+  equipe_id?: string | null;
+  turno_id?: string | null;
+  hora_inicio: string;
+  hora_fim: string;
+  tipo: TipoPlantao;
+  origem: OrigemEscala;
+  observacao?: string;
 }
 
 export interface Plantao {
@@ -77,6 +126,11 @@ export interface Plantao {
   hora_inicio: string;
   hora_fim: string;
   tipo: string;
+  origem?: OrigemEscala;
+  turno_id?: string | null;
+  escala_id?: string | null;
+  equipe_id?: string | null;
+  observacao?: string;
 }
 
 export type StatusFerias = 'aprovado' | 'pendente' | 'rejeitado';
@@ -92,10 +146,15 @@ export interface Ferias {
 export interface BootstrapData {
   clientes: Cliente[];
   equipes: Equipe[];
+  cargos: Cargo[];
+  turnos: Turno[];
   colaboradores: Colaborador[];
   gestores: Gestor[];
   escalas: Escala[];
   escalaDetalhes: EscalaDetalhe[];
   escalaColaboradores: EscalaColaborador[];
+  escalaRotacoes: EscalaRotacao[];
+  escalaRotacaoMembros: EscalaRotacaoMembro[];
+  escalaOverrides: EscalaOverride[];
   ferias: Ferias[];
 }
