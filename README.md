@@ -4,7 +4,7 @@ Sistema de Gestão Operacional com frontend React/Vite, API Node e PostgreSQL co
 
 ## O que foi preparado
 
-- deploy de serviço único no Coolify com `Dockerfile`;
+- deploy de serviço único no Coolify com `Dockerfile` multi-stage otimizado;
 - backend HTTP em `server/index.js` com rotas REST e autenticação baseada em banco;
 - criação automática das tabelas PostgreSQL na inicialização;
 - usuário administrador bootstrapado com `ADMIN_EMAIL` e `ADMIN_PASSWORD`;
