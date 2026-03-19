@@ -10,6 +10,41 @@ Sistema de Gestão Operacional com frontend React/Vite, API Node e PostgreSQL co
 - usuário administrador bootstrapado com `ADMIN_EMAIL` e `ADMIN_PASSWORD`;
 - frontend sem mocks, consumindo `/api/*` em tempo real;
 - formulários de clientes, equipes, colaboradores, gestores, escalas e férias integrados com a API.
+- motor de plantão orientado a dados com suporte a cargos, turnos, rotações e overrides manuais;
+- endpoint `/api/plantao/atual` para consultar a verdade operacional do momento.
+
+
+## Arquitetura operacional implementada
+
+O sistema agora foi estruturado em torno de um princípio central: **a escala padrão nunca é a verdade absoluta**. A verdade final do plantão sempre pode ser sobrescrita manualmente.
+
+### Camadas de decisão
+
+1. **Escala base**: `escalas`, `escala_detalhes` e `escala_colaboradores` definem o planejamento padrão.
+2. **Rotação**: `escala_rotacoes` e `escala_rotacao_membros` automatizam rodízios semanais, quinzenais e de fim de semana.
+3. **Override manual**: `escala_overrides` representa a escala real do dia e tem prioridade sobre qualquer regra automática.
+
+### Novas entidades de domínio
+
+- `cargos`: subnível hierárquico de cada equipe;
+- `turnos`: classificação explícita de diurno/noturno ou qualquer janela operacional;
+- `cargo_id` e `data_admissao` em `colaboradores`;
+- `turno_id` e `quantidade_pessoas` em `escala_detalhes`.
+
+### Regra de resolução do plantão
+
+Ao consultar o plantão atual, o backend aplica a seguinte ordem:
+
+1. carrega a escala base da data;
+2. aplica rotações ativas para o turno correspondente;
+3. remove colaboradores em férias aprovadas ou inativos;
+4. aplica `escala_overrides`, que substituem a cobertura base no mesmo turno/horário;
+5. retorna a escala real final.
+
+### Endpoint operacional
+
+- `GET /api/plantao/atual`: retorna os plantões válidos para o horário atual;
+- `GET /api/plantao/atual?at=2026-03-19T22:00:00Z`: permite simular a consulta em outra data/hora ISO-8601.
 
 ## Variáveis de ambiente
 
@@ -41,11 +76,16 @@ As tabelas provisionadas são:
 - `users`
 - `clientes`
 - `equipes`
+- `cargos`
 - `colaboradores`
 - `gestores`
+- `turnos`
 - `escalas`
 - `escala_detalhes`
 - `escala_colaboradores`
+- `escala_rotacoes`
+- `escala_rotacao_membros`
+- `escala_overrides`
 - `ferias`
 
 ## Desenvolvimento local
