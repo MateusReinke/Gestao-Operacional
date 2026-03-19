@@ -13,14 +13,14 @@ export interface Cliente {
   nome: string;
   id_whatsapp: string;
   escalation: string;
-  responsavel_interno_id: string;
+  responsavel_interno_id: string | null;
   ativo: boolean;
 }
 
 export interface Equipe {
   id: string;
   nome: string;
-  cliente_id?: string;
+  cliente_id?: string | null;
   ativo: boolean;
 }
 
@@ -32,7 +32,7 @@ export interface Colaborador {
   nome: string;
   email: string;
   telefone: string;
-  equipe_id: string;
+  equipe_id: string | null;
   tipo_contrato: TipoContrato;
   modelo_trabalho: ModeloTrabalho;
   ativo: boolean;
@@ -87,4 +87,15 @@ export interface Ferias {
   data_inicio: string;
   data_fim: string;
   status: StatusFerias;
+}
+
+export interface BootstrapData {
+  clientes: Cliente[];
+  equipes: Equipe[];
+  colaboradores: Colaborador[];
+  gestores: Gestor[];
+  escalas: Escala[];
+  escalaDetalhes: EscalaDetalhe[];
+  escalaColaboradores: EscalaColaborador[];
+  ferias: Ferias[];
 }

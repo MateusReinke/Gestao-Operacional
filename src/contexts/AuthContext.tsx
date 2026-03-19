@@ -1,10 +1,10 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { User } from '@/types/sgo';
-import { users } from '@/data/mock';
+import { api } from '@/lib/api';
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => boolean;
+  login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   isAdmin: boolean;
 }
@@ -14,10 +14,12 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(() => {
     const stored = localStorage.getItem('sgo_user');
-    if (stored) {
-      try { return JSON.parse(stored); } catch { return null; }
+    if (!stored) return null;
+    try {
+      return JSON.parse(stored);
+    } catch {
+      return null;
     }
-    return null;
   });
 
   useEffect(() => {
@@ -25,10 +27,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     else localStorage.removeItem('sgo_user');
   }, [user]);
 
-  const login = useCallback((email: string, _password: string) => {
-    const found = users.find(u => u.email === email);
-    if (found) { setUser(found); return true; }
-    return false;
+  const login = useCallback(async (email: string, password: string) => {
+    try {
+      const loggedUser = await api.login(email, password);
+      setUser(loggedUser);
+      return true;
+    } catch {
+      return false;
+    }
   }, []);
 
   const logout = useCallback(() => setUser(null), []);
