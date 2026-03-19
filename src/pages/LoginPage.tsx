@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,14 +10,23 @@ import { Shield } from 'lucide-react';
 
 export default function LoginPage() {
   const { login } = useAuth();
-  const [email, setEmail] = useState('admin@sgo.com');
-  const [password, setPassword] = useState('admin');
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const ok = login(email, password);
-    if (!ok) setError('Credenciais inválidas. Use admin@sgo.com ou carlos@sgo.com');
+    setLoading(true);
+    setError('');
+    const ok = await login(email, password);
+    setLoading(false);
+    if (!ok) {
+      setError('Credenciais inválidas. Confira os dados cadastrados no PostgreSQL.');
+      return;
+    }
+    navigate('/');
   };
 
   return (
@@ -31,26 +41,26 @@ export default function LoginPage() {
           </div>
           <div>
             <CardTitle className="text-xl font-bold">SGO</CardTitle>
-            <CardDescription className="text-sm">Sistema de Gestão Operacional</CardDescription>
+            <CardDescription className="text-sm">Acesso conectado à API e ao PostgreSQL</CardDescription>
           </div>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">E-mail</Label>
-              <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="seu@email.com" />
+              <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="admin@empresa.com" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Senha</Label>
               <Input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••" />
             </div>
             {error && <p className="text-sm text-destructive">{error}</p>}
-            <Button type="submit" className="w-full font-medium">Entrar</Button>
+            <Button type="submit" className="w-full font-medium" disabled={loading}>
+              {loading ? 'Entrando...' : 'Entrar'}
+            </Button>
             <div className="rounded-md bg-muted p-3 mt-4">
               <p className="text-xs text-muted-foreground text-center leading-relaxed">
-                <span className="font-medium text-foreground">Admin:</span> admin@sgo.com<br />
-                <span className="font-medium text-foreground">Gestor:</span> carlos@sgo.com<br />
-                <span className="text-[10px]">Qualquer senha</span>
+                Crie o primeiro acesso com <span className="font-medium text-foreground">ADMIN_EMAIL</span> e <span className="font-medium text-foreground">ADMIN_PASSWORD</span>.
               </p>
             </div>
           </form>
