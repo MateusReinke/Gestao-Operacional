@@ -17,6 +17,7 @@ Use os valores do arquivo `.env.example`:
 
 - `DATABASE_URL`: string completa de conexão PostgreSQL;
 - `PGSSL`: `true` para bancos gerenciados com SSL obrigatório;
+- `HOST`: interface de rede que o servidor HTTP vai escutar. Use `0.0.0.0` para acesso pela rede local;
 - `PORT`: porta do servidor;
 - `CORS_ORIGIN`: origem permitida para chamadas externas;
 - `ADMIN_NAME`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`: usuário inicial criado automaticamente;
@@ -49,22 +50,31 @@ As tabelas provisionadas são:
 
 ## Desenvolvimento local
 
-Para subir o serviço completo na porta `4333`:
+Para subir o serviço completo acessível na rede local pela porta `4333`:
 
 ```bash
 npm install
 cp .env.example .env
 npm run build
-PORT=4333 npm run start
+HOST=0.0.0.0 PORT=4333 npm run start
 ```
 
-Para desenvolvimento do frontend isolado na porta `4333`:
+Para desenvolvimento do frontend isolado na porta `4333` com acesso por outro dispositivo da rede:
 
 ```bash
 npm install
 npm run dev
 ```
 
-A aplicação fica disponível em `http://localhost:4333`.
+A aplicação fica disponível em `http://localhost:4333` e, se a máquina tiver o IP `192.168.1.9`, também em `http://192.168.1.9:4333`.
 
 > Observação: para usar o app completo localmente, mantenha um PostgreSQL acessível e configure `DATABASE_URL`.
+
+## Acesso pela rede local
+
+Para abrir a aplicação a partir de outro dispositivo usando `http://192.168.1.9:4333`, confirme também:
+
+1. que o servidor foi iniciado com `HOST=0.0.0.0`;
+2. que a máquina realmente está com o IP `192.168.1.9`;
+3. que a porta `4333` está liberada no firewall/roteador;
+4. que o PostgreSQL configurado em `DATABASE_URL` está acessível pelo backend.
