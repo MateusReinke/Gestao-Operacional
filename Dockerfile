@@ -4,6 +4,8 @@ COPY package*.json ./
 RUN npm install
 
 FROM deps AS build
+ARG VITE_API_URL=
+ENV VITE_API_URL=$VITE_API_URL
 COPY . .
 RUN npm run build
 RUN npm prune --omit=dev && npm cache clean --force

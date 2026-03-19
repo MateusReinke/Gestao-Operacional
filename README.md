@@ -24,11 +24,14 @@ Use os valores do arquivo `.env.example`:
 
 ## Deploy no Coolify
 
+Este repositório agora inclui `docker-compose.yml` para o Coolify detectar e pré-preencher as variáveis na tela **Environment Variables** durante a criação do recurso.
+
 1. Crie um novo recurso apontando para este repositório.
-2. Escolha deploy por `Dockerfile`.
-3. Adicione as variáveis de ambiente do `.env.example`.
-4. Informe a `DATABASE_URL` do PostgreSQL que você criar no próprio Coolify ou em um serviço externo.
-5. Faça o deploy. Na primeira subida o backend criará as tabelas automaticamente.
+2. Escolha deploy por `Docker Compose`.
+3. Ao carregar o `docker-compose.yml`, o Coolify exibirá automaticamente as variáveis em **Environment Variables**.
+4. Preencha principalmente `DATABASE_URL`, `ADMIN_EMAIL` e `ADMIN_PASSWORD`.
+5. Se o frontend e a API estiverem no mesmo serviço, mantenha `VITE_API_URL` vazio.
+6. Faça o deploy. Na primeira subida o backend criará as tabelas automaticamente.
 
 ## Banco criado automaticamente
 
