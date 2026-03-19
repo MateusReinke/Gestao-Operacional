@@ -10,7 +10,7 @@ const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
 const distDir = path.join(rootDir, 'dist');
 
-const port = Number(process.env.PORT || 3000);
+const port = Number(process.env.PORT || 4333);
 const databaseUrl = process.env.DATABASE_URL;
 
 if (!databaseUrl) {

@@ -8,10 +8,12 @@ services:
     environment:
       DATABASE_URL: ${DATABASE_URL:?}
       PGSSL: ${PGSSL:-false}
-      PORT: ${PORT:?3000}
+      PORT: ${PORT:-4333}
       CORS_ORIGIN: ${CORS_ORIGIN:-*}
       ADMIN_NAME: ${ADMIN_NAME:-Administrador}
       ADMIN_EMAIL: ${ADMIN_EMAIL:?admin@empresa.com}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:?troque-essa-senha}
       VITE_API_URL: ${VITE_API_URL:-}
+    ports:
+      - "${PORT:-4333}:4333"
     restart: unless-stopped
