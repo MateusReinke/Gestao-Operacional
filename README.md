@@ -49,18 +49,22 @@ As tabelas provisionadas são:
 
 ## Desenvolvimento local
 
+Para subir o serviço completo na porta `4333`:
+
 ```bash
 npm install
 cp .env.example .env
 npm run build
-npm run start
+PORT=4333 npm run start
 ```
 
-Para desenvolvimento do frontend isolado:
+Para desenvolvimento do frontend isolado na porta `4333`:
 
 ```bash
 npm install
 npm run dev
 ```
+
+A aplicação fica disponível em `http://localhost:4333`.
 
 > Observação: para usar o app completo localmente, mantenha um PostgreSQL acessível e configure `DATABASE_URL`.
